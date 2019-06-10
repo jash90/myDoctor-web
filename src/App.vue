@@ -1,27 +1,39 @@
 <template>
   <div id="app">
-    <router-view />
+    <b-navbar type="dark" variant="info">
+      <b-navbar-brand href="#">MyDoctor</b-navbar-brand>
+
+      <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+
+      <b-collapse id="nav-collapse" is-nav>
+
+        <!-- Right aligned nav items -->
+        <b-navbar-nav class="ml-auto">
+          <b-nav-item-dropdown right>
+            <template slot="button-content">
+              <em>User</em>
+            </template>
+            <b-dropdown-item href="#">Profil</b-dropdown-item>
+            <b-dropdown-item href="#">Wyloguj</b-dropdown-item>
+          </b-nav-item-dropdown>
+        </b-navbar-nav>
+      </b-collapse>
+    </b-navbar>
+    <router-view/>
+    <div class="footer">
+      © 2018 Copyright: Szymon Zimny i Miłosz Winnicki
+      </div>
   </div>
 </template>
 
-<style>
-#app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<style scoped>
+#app{
 }
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
+.footer {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  color:white;
+  background-color: #18a2b8;
 }
 </style>

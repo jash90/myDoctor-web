@@ -1,6 +1,14 @@
 <template>
-  <div class="home">
-    
+  <div id="home">
+  <b-jumbotron>
+    <template slot="header">MyDoctor</template>
+
+    <template slot="lead">
+      Aplikacja służąca do obsługi przychodni.
+    </template>
+
+    <b-button variant="primary" href="login">Zaloguj</b-button>
+  </b-jumbotron>
   </div>
 </template>
 
@@ -16,3 +24,10 @@ import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
 export default class Home extends Vue {
 }
 </script>
+<style scoped>
+#home {
+}
+.jumbotron{
+  margin-bottom:0px;
+}
+</style>
