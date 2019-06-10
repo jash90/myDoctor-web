@@ -15,7 +15,7 @@ import { Component, Vue } from "vue-property-decorator";
 @Component({
   components: {}
 })
-export default class Home extends Vue {
+export default class Login extends Vue {
   login: string = "";
   password: string = "";
 }

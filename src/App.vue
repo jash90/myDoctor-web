@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <b-navbar type="dark" variant="info">
-      <b-navbar-brand href="#">MyDoctor</b-navbar-brand>
+      <b-navbar-brand href="/">MyDoctor</b-navbar-brand>
 
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
