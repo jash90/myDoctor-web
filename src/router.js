@@ -4,6 +4,7 @@ import Home from "./views/Home.vue";
 import Start from "./views/Start.vue";
 import Login from "./views/Login.vue";
 import Visit from "./views/Visit.vue";
+import Doctor from "./views/Doctor.vue";
 
 Vue.use(Router);
 
@@ -31,6 +32,11 @@ export default new Router({
       path: "/visit",
       name: "visit",
       component: Visit
+    },
+    {
+      path: "/doctor",
+      name: "doctor",
+      component: Doctor
     }
   ]
 });
