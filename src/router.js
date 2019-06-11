@@ -5,6 +5,7 @@ import Start from "./views/Start.vue";
 import Login from "./views/Login.vue";
 import Visit from "./views/Visit.vue";
 import Doctor from "./views/Doctor.vue";
+import Pantient from "./views/Pantient.vue";
 
 Vue.use(Router);
 
@@ -37,6 +38,11 @@ export default new Router({
       path: "/doctor",
       name: "doctor",
       component: Doctor
+    },
+    {
+      path: "/pantient",
+      name: "pantient",
+      component: Pantient
     }
   ]
 });
