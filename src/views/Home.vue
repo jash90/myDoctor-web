@@ -18,7 +18,7 @@
             <H1>Pacjenci</H1>
           </b-row>
           <b-row>
-            <b-button block variant="outline-primary">Lista pacjentów</b-button>
+            <b-button block variant="outline-primary" href="pantient">Lista pacjentów</b-button>
           </b-row>
           <b-row>
             <b-button block variant="outline-primary">Dodaj pacjenta</b-button>
