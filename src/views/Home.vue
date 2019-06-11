@@ -7,7 +7,7 @@
             <H1>Lekarze</H1>
           </b-row>
           <b-row>
-            <b-button block variant="outline-primary">Lista lekarzy</b-button>
+            <b-button block variant="outline-primary" href="doctor">Lista lekarzy</b-button>
           </b-row>
           <b-row>
             <b-button block variant="outline-primary">Dodaj lekarza</b-button>
@@ -44,8 +44,7 @@
 // @ is an alias to /src
 export default {
   name: "home",
-  components: {
-  }
+  components: {}
 };
 </script>
 <style>
