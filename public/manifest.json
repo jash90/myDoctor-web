@@ -1,6 +1,6 @@
 {
-  "name": "mydoctorweb",
-  "short_name": "mydoctorweb",
+  "name": "mydoctor-web",
+  "short_name": "mydoctor-web",
   "icons": [
     {
       "src": "./img/icons/android-chrome-192x192.png",

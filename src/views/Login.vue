@@ -3,22 +3,30 @@
     <b-form class="form">
       <h1>Logowanie</h1>
       <b-form-input class="input" type="email" v-model="email" required placeholder="email"/>
-      <b-form-input class="input" type="password" v-model="password" required placeholder="password"/>
+      <b-form-input
+        class="input"
+        type="password"
+        v-model="password"
+        required
+        placeholder="password"
+      />
       <b-button class="button" variant="primary" href="visit">Zaloguj</b-button>
     </b-form>
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-
-@Component({
-  components: {}
-})
-export default class Login extends Vue {
-  login: string = "";
-  password: string = "";
-}
+<script>
+// @ is an alias to /src
+export default {
+  name: "login",
+  components: {},
+  data: () => {
+    return {
+      login: "",
+      password: ""
+    };
+  }
+};
 </script>
 <style>
 #login {
@@ -27,14 +35,14 @@ export default class Login extends Vue {
   justify-content: center;
   align-items: center;
 }
-.form{
+.form {
   display: flex;
   flex-direction: column;
 }
-.input{
-  margin-bottom:10px;
+.input {
+  margin-bottom: 10px;
 }
-.button{
+.button {
   align-self: flex-end;
 }
 </style>

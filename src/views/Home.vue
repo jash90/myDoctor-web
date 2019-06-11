@@ -40,13 +40,13 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-
-@Component({
-  components: {}
-})
-export default class Home extends Vue {}
+<script>
+// @ is an alias to /src
+export default {
+  name: "home",
+  components: {
+  }
+};
 </script>
 <style>
 #home {
@@ -62,3 +62,4 @@ export default class Home extends Vue {}
   padding: 5px;
 }
 </style>
+
