@@ -4,7 +4,7 @@
     <div class="searchBar">
       <b-button variant="primary">Dodaj</b-button>
       <b-button variant="secondary" disabled>Edytuj</b-button>
-      <b-button variant="danger" disabled>Usuń</b-button>
+      <b-button variant="danger" :disabled="selected.length === 0" @click="showMsgBoxTwo">Usuń</b-button>
     </div>
     <div class="searchBar">
       <b-form-input v-model="selectedNumber" placeholder="Podaj numer" type="number" class="col-3"></b-form-input>
@@ -85,6 +85,32 @@ export default {
   methods: {
     rowSelected(items) {
       this.selected = items;
+    },
+    showMsgBoxTwo() {
+      this.boxTwo = "";
+      const { firstname, lastname, numberPwz } = this.selected[0];
+      this.$bvModal
+        .msgBoxConfirm(
+          `Czy chcesz usunąć pana doktora ${firstname} ${lastname} o numerze PWZ ${numberPwz} ?`,
+          {
+            title: "Usuwanie lekarza",
+            size: "sm",
+            buttonSize: "sm",
+            okVariant: "secondary",
+            cancelVariant: "primary",
+            okTitle: "Usuń",
+            cancelTitle: "Nie",
+            footerClass: "p-2",
+            hideHeaderClose: true,
+            centered: true
+          }
+        )
+        .then(value => {
+          this.boxTwo = value;
+        })
+        .catch(() => {
+          // An error occurred
+        });
     }
   }
 };
