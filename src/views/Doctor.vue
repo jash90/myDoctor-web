@@ -1,6 +1,6 @@
 <template>
   <div id="doctor">
-    <h1>Lekarze</h1>
+    <!-- <h1>Lekarze</h1>
     <div class="searchBar">
       <b-button variant="primary">Dodaj</b-button>
       <b-button variant="secondary" disabled>Edytuj</b-button>
@@ -33,30 +33,44 @@
       :items="items"
       :fields="fields"
     ></b-table>
-    <b-pagination v-model="id" total-rows="10" per-page="1" class="my-0"></b-pagination>
+    <b-pagination v-model="id" total-rows="10" per-page="1" class="my-0"></b-pagination>-->
+    <Table
+      title="Lekarze"
+      :totalRow="10"
+      :perPage="1"
+      :fields="fields"
+      :items="items"
+      :selectedRow="selected"
+      :filtered="filtered"
+    />
   </div>
 </template>
 
 <script>
+import Table from "@/components/Table.vue";
 export default {
   name: "doctor",
-  components: {},
+  components: { Table },
   data: () => {
     return {
       fields: {
         numberPwz: {
+          id: 1,
           label: "Numer PWZ",
           sortable: true
         },
         firstname: {
+          id: 2,
           label: "Imię",
           sortable: true
         },
         lastname: {
+          id: 3,
           label: "Nazwisko",
           sortable: true
         },
         specialization: {
+          id: 4,
           label: "Specjalizacja",
           sortable: true
         }
@@ -75,10 +89,7 @@ export default {
           specialization: "urolog"
         }
       ],
-      selectedNumber: 0,
-      selectedFirstname: "",
-      selectedLastname: "",
-      selectedSpecialization: "",
+      filtered: ["", "", "", ""],
       selected: []
     };
   },
