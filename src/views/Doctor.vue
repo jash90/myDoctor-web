@@ -1,10 +1,10 @@
 <template>
   <div id="doctor">
-    <!-- <h1>Lekarze</h1>
+    <h1>Lekarze</h1>
     <div class="searchBar">
-      <b-button variant="primary">Dodaj</b-button>
-      <b-button variant="secondary" disabled>Edytuj</b-button>
-      <b-button variant="danger" :disabled="selected.length === 0" @click="showMsgBoxTwo">Usuń</b-button>
+      <b-button variant="primary" :disabled="selected.length !== 0" @click="add">Dodaj</b-button>
+      <b-button variant="secondary" :disabled="selected.length === 0" @click="edit">Edytuj</b-button>
+      <b-button variant="danger" :disabled="selected.length === 0" @click="remove">Usuń</b-button>
     </div>
     <div class="searchBar">
       <b-form-input v-model="selectedNumber" placeholder="Podaj numer" type="number" class="col-3"></b-form-input>
@@ -23,34 +23,38 @@
       ></b-form-input>
     </div>
     <b-table
+      ref="table"
       selectable
       select-mode="single"
-      @row-selected="rowSelected"
+      @row-selected="selectedDoctor"
       striped
       hover
       small
       fixed
       :items="items"
       :fields="fields"
+      show-empty
     ></b-table>
-    <b-pagination v-model="id" total-rows="10" per-page="1" class="my-0"></b-pagination>-->
-    <Table
-      title="Lekarze"
-      :totalRow="10"
-      :perPage="1"
-      :fields="fields"
-      :items="items"
-      :selectedRow="selected"
-      :filtered="filtered"
-    />
+    <b-pagination v-model="id" total-rows="10" per-page="1" class="my-0"></b-pagination>
+    <b-modal
+      ref="edit"
+      :title="selected.length >0 ? 'Edycja doktora':'Dodaj doktora'"
+      centered
+      @ok="ok"
+      @cancel="cancel"
+    >
+      <b-form-input v-model="editNumber" placeholder="Podaj numer" type="number"></b-form-input>
+      <b-form-input v-model="editFirstname" placeholder="Podaj imię" type="text"></b-form-input>
+      <b-form-input v-model="editLastname" placeholder="Podaj nazwisko" type="text"></b-form-input>
+      <b-form-input v-model="editSpecialization" placeholder="Podaj specjalizację" type="text"></b-form-input>
+    </b-modal>
   </div>
 </template>
 
 <script>
-import Table from "@/components/Table.vue";
 export default {
   name: "doctor",
-  components: { Table },
+  components: {},
   data: () => {
     return {
       fields: {
@@ -89,15 +93,22 @@ export default {
           specialization: "urolog"
         }
       ],
-      filtered: ["", "", "", ""],
+      selectedNumber: null,
+      selectedFirstname: "",
+      selectedLastname: "",
+      selectedSpecialization: "",
+      editNumber: 0,
+      editFirstname: "",
+      editLastname: "",
+      editSpecialization: "",
       selected: []
     };
   },
   methods: {
-    rowSelected(items) {
+    selectedDoctor(items) {
       this.selected = items;
     },
-    showMsgBoxTwo() {
+    remove() {
       this.boxTwo = "";
       const { firstname, lastname, numberPwz } = this.selected[0];
       this.$bvModal
@@ -117,11 +128,66 @@ export default {
           }
         )
         .then(value => {
-          this.boxTwo = value;
+          if (value) {
+            const index = this.items.findIndex(
+              item => item === this.selected[0]
+            );
+            if (index > -1) this.items.splice(index, 1);
+          }
         })
-        .catch(() => {
-          // An error occurred
+        .catch(error => {
+          console.log(error);
         });
+    },
+    edit() {
+      const {
+        numberPwz,
+        firstname,
+        lastname,
+        specialization
+      } = this.selected[0];
+      this.editNumber = numberPwz;
+      this.editFirstname = firstname;
+      this.editLastname = lastname;
+      this.editSpecialization = specialization;
+      this.$refs["edit"].show();
+    },
+    add() {
+      this.$refs["edit"].show();
+    },
+    cancel() {
+      this.selected = [];
+      this.editNumber = null;
+      this.editFirstname = "";
+      this.editLastname = "";
+      this.editSpecialization = "";
+    },
+    ok() {
+      if (this.selected) {
+        const index = this.items.findIndex(item => item === this.selected[0]);
+        this.items[index].numberPwz = this.editNumber;
+        this.items[index].firstname = this.editFirstname;
+        this.items[index].lastname = this.editLastname;
+        this.items[index].specialization = this.editSpecialization;
+        this.selected = [];
+        this.editNumber = null;
+        this.editFirstname = "";
+        this.editLastname = "";
+        this.editSpecialization = "";
+      } else {
+        this.items.push({
+          numberPwz: this.editNumber,
+          firstname: this.editFirstname,
+          lastname: this.editLastname,
+          specialization: this.editSpecialization
+        });
+        this.selected = [];
+        this.editNumber = null;
+        this.editFirstname = "";
+        this.editLastname = "";
+        this.editSpecialization = "";
+      }
+      this.$refs.table.clearSelected();
     }
   }
 };
