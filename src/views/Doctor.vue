@@ -6,7 +6,7 @@
       <b-button variant="secondary" :disabled="!selected" @click="edit">Edytuj</b-button>
       <b-button variant="danger" :disabled="!selected" @click="remove">Usuń</b-button>
     </div>
-    <div class="searchBar">
+    <!-- <div class="searchBar">
       <b-form-input v-model="selectedNumber" placeholder="Podaj numer" type="number" class="col-3"></b-form-input>
       <b-form-input v-model="selectedFirstname" placeholder="Podaj imię" type="text" class="col-3"></b-form-input>
       <b-form-input
@@ -21,7 +21,7 @@
         type="text"
         class="col-3"
       ></b-form-input>
-    </div>
+    </div> -->
     <b-table
       ref="table"
       selectable
@@ -109,7 +109,6 @@ export default {
       this.selected = items[0];
     },
     remove() {
-      this.boxTwo = "";
       const { firstname, lastname, numberPwz } = this.selected;
       this.$bvModal
         .msgBoxConfirm(

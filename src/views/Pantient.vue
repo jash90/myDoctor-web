@@ -2,11 +2,11 @@
   <div id="visit">
     <h1>Pacjenci</h1>
     <div class="searchBar">
-    <b-button variant="primary" :disabled="!!selected" @click="add">Dodaj</b-button>
+      <b-button variant="primary" :disabled="!!selected" @click="add">Dodaj</b-button>
       <b-button variant="secondary" :disabled="!selected" @click="edit">Edytuj</b-button>
       <b-button variant="danger" :disabled="!selected" @click="remove">Usuń</b-button>
     </div>
-    <div class="searchBar">
+    <!-- <div class="searchBar">
       <b-form-input v-model="selectedFirstname" placeholder="Podaj imię" type="text"></b-form-input>
       <b-form-input v-model="selectedLastname" placeholder="Podaj nazwisko" type="text"></b-form-input>
       <b-form-input v-model="selectedStreet" placeholder="Podaj ulicę" type="text"></b-form-input>
@@ -14,7 +14,7 @@
       <b-form-input v-model="selectedPostcode" placeholder="Podaj kod pocztowy" type="text"></b-form-input>
       <b-form-input v-model="selectedPhone" placeholder="Podaj telefon" type="number"></b-form-input>
       <b-form-input v-model="selectedPesel" placeholder="Podaj pesel" type="number"></b-form-input>
-    </div>
+    </div> -->
     <b-table
       ref="table"
       selectable
