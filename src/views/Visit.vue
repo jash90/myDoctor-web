@@ -199,7 +199,7 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
 #visit {
   padding: 20px;
   display: flex;

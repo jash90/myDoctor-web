@@ -28,7 +28,7 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
 #login {
   padding: 20px;
   display: flex;

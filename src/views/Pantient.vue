@@ -1,5 +1,5 @@
 <template>
-  <div id="visit">
+  <div id="pantient">
     <h1>Pacjenci</h1>
     <div class="searchBar">
       <b-button variant="primary" :disabled="!!selected" @click="add">Dodaj</b-button>
@@ -226,7 +226,7 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
 #pantient {
   padding: 20px;
   display: flex;

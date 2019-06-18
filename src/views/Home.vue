@@ -35,6 +35,14 @@
             <b-button block variant="outline-primary">Rejestruj wizytę</b-button>
           </b-row>
         </b-col>
+         <b-col>
+          <b-row>
+            <H1>Użytkownicy</H1>
+          </b-row>
+          <b-row>
+            <b-button block variant="outline-primary" href="register">Rejestruj użytkownika</b-button>
+          </b-row>
+        </b-col>
       </b-row>
     </b-container>
   </div>
@@ -47,7 +55,7 @@ export default {
   components: {}
 };
 </script>
-<style>
+<style scoped>
 #home {
   padding: 20px;
   display: flex;
