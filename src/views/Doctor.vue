@@ -2,9 +2,9 @@
   <div id="doctor">
     <h1>Lekarze</h1>
     <div class="searchBar">
-      <b-button variant="primary" :disabled="selected.length !== 0" @click="add">Dodaj</b-button>
-      <b-button variant="secondary" :disabled="selected.length === 0" @click="edit">Edytuj</b-button>
-      <b-button variant="danger" :disabled="selected.length === 0" @click="remove">Usuń</b-button>
+      <b-button variant="primary" :disabled="!!selected" @click="add">Dodaj</b-button>
+      <b-button variant="secondary" :disabled="!selected" @click="edit">Edytuj</b-button>
+      <b-button variant="danger" :disabled="!selected" @click="remove">Usuń</b-button>
     </div>
     <div class="searchBar">
       <b-form-input v-model="selectedNumber" placeholder="Podaj numer" type="number" class="col-3"></b-form-input>
@@ -26,7 +26,7 @@
       ref="table"
       selectable
       select-mode="single"
-      @row-selected="selectedDoctor"
+      @row-selected="select"
       striped
       hover
       small
@@ -38,7 +38,7 @@
     <b-pagination v-model="id" total-rows="10" per-page="1" class="my-0"></b-pagination>
     <b-modal
       ref="edit"
-      :title="selected.length >0 ? 'Edycja doktora':'Dodaj doktora'"
+      :title="selected !== null ? 'Edycja doktora':'Dodaj doktora'"
       centered
       @ok="ok"
       @cancel="cancel"
@@ -101,16 +101,16 @@ export default {
       editFirstname: "",
       editLastname: "",
       editSpecialization: "",
-      selected: []
+      selected: null
     };
   },
   methods: {
-    selectedDoctor(items) {
-      this.selected = items;
+    select(items) {
+      this.selected = items[0];
     },
     remove() {
       this.boxTwo = "";
-      const { firstname, lastname, numberPwz } = this.selected[0];
+      const { firstname, lastname, numberPwz } = this.selected;
       this.$bvModal
         .msgBoxConfirm(
           `Czy chcesz usunąć pana doktora ${firstname} ${lastname} o numerze PWZ ${numberPwz} ?`,
@@ -129,9 +129,7 @@ export default {
         )
         .then(value => {
           if (value) {
-            const index = this.items.findIndex(
-              item => item === this.selected[0]
-            );
+            const index = this.items.findIndex(item => item === this.selected);
             if (index > -1) this.items.splice(index, 1);
           }
         })
@@ -140,12 +138,7 @@ export default {
         });
     },
     edit() {
-      const {
-        numberPwz,
-        firstname,
-        lastname,
-        specialization
-      } = this.selected[0];
+      const { numberPwz, firstname, lastname, specialization } = this.selected;
       this.editNumber = numberPwz;
       this.editFirstname = firstname;
       this.editLastname = lastname;
@@ -156,7 +149,7 @@ export default {
       this.$refs["edit"].show();
     },
     cancel() {
-      this.selected = [];
+      this.selected = null;
       this.editNumber = null;
       this.editFirstname = "";
       this.editLastname = "";
@@ -164,16 +157,11 @@ export default {
     },
     ok() {
       if (this.selected) {
-        const index = this.items.findIndex(item => item === this.selected[0]);
+        const index = this.items.findIndex(item => item === this.selected);
         this.items[index].numberPwz = this.editNumber;
         this.items[index].firstname = this.editFirstname;
         this.items[index].lastname = this.editLastname;
         this.items[index].specialization = this.editSpecialization;
-        this.selected = [];
-        this.editNumber = null;
-        this.editFirstname = "";
-        this.editLastname = "";
-        this.editSpecialization = "";
       } else {
         this.items.push({
           numberPwz: this.editNumber,
@@ -181,13 +169,13 @@ export default {
           lastname: this.editLastname,
           specialization: this.editSpecialization
         });
-        this.selected = [];
-        this.editNumber = null;
-        this.editFirstname = "";
-        this.editLastname = "";
-        this.editSpecialization = "";
       }
       this.$refs.table.clearSelected();
+      this.selected = null;
+      this.editNumber = null;
+      this.editFirstname = "";
+      this.editLastname = "";
+      this.editSpecialization = "";
     }
   }
 };
