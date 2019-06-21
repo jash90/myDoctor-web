@@ -14,7 +14,7 @@
       <b-form-input v-model="selectedPostcode" placeholder="Podaj kod pocztowy" type="text"></b-form-input>
       <b-form-input v-model="selectedPhone" placeholder="Podaj telefon" type="number"></b-form-input>
       <b-form-input v-model="selectedPesel" placeholder="Podaj pesel" type="number"></b-form-input>
-    </div> -->
+    </div>-->
     <b-table
       ref="table"
       selectable
@@ -28,7 +28,7 @@
       :fields="fields"
       show-empty
     ></b-table>
-    <b-pagination v-model="id" total-rows="10" per-page="1" class="my-0"></b-pagination>
+    <b-pagination v-model="page" :total-rows="totalPage" per-page="1" class="my-0" @change="changePage"></b-pagination>
     <b-modal
       ref="edit"
       :title="!!selected ? 'Edycja pacjenta':'Dodaj pacjenta'"
@@ -117,7 +117,9 @@ export default {
       editPostcode: "",
       editPhone: null,
       editPesel: null,
-      selected: null
+      selected: null,
+            page: 1,
+      totalPage: 10
     };
   },
   methods: {
@@ -222,7 +224,33 @@ export default {
         this.editPesel = null;
       }
       this.$refs.table.clearSelected();
+    },
+    changePage(id) {
+      var router = "/pantient";
+      if (id > 1) router += "/" + id;
+      this.$router.push(router);
+      this.loadPantients();
+    },
+    async loadPantients() {
+      this.loading = true;
+      this.page = this.$route.params.id;
+      if (this.page === undefined) this.page = 1;
+      this.$api
+        .get(`pantients/${this.page - 1}`)
+        .then(response => {
+          const { count, rows } = response.data;
+          this.items = rows;
+          this.totalPage = (count / 100).toFixed(0);
+          this.loading = false;
+        })
+        .catch(error => {
+          console.log(error);
+          this.loading = false;
+        });
     }
+  },
+  created() {
+    this.loadPantients();
   }
 };
 </script>

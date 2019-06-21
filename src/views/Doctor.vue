@@ -109,8 +109,7 @@ export default {
       editSpecialization: "",
       selected: null,
       page: 1,
-      totalPage: 10,
-      loading: false
+      totalPage: 10
     };
   },
   methods: {

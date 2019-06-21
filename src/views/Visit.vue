@@ -22,8 +22,12 @@
       fixed
       :items="items"
       :fields="fields"
-    ></b-table>
-    <b-pagination v-model="id" total-rows="10" per-page="1" class="my-0"></b-pagination>
+    >
+      <template slot="date" slot-scope="data">
+        {{ new Date(data.item.date).toString() }}
+      </template>
+</b-table>
+    <b-pagination v-model="page" :total-rows="totalPage" per-page="1" class="my-0" @change="changePage"></b-pagination>
     <b-modal
       ref="edit"
       :title="selected !== null ? 'Edycja wizyty':'Dodaj wizytę'"
@@ -121,7 +125,9 @@ export default {
       editDescription: "",
       editDate: null,
       editTime: null,
-      selected: null
+      selected: null,
+      page:1,
+      totalPage:3
     };
   },
   methods: {
@@ -195,7 +201,33 @@ export default {
       this.editPantient = null;
       this.editDate = null;
       this.editDescription = "";
+    },
+    changePage(id) {
+      var router = "/visit";
+      if (id > 1) router += "/" + id;
+      this.$router.push(router);
+      this.loadVisit();
+    },
+    async loadVisit() {
+      this.loading = true;
+      this.page = this.$route.params.id;
+      if (this.page === undefined) this.page = 1;
+      this.$api
+        .get(`visits/${this.page - 1}`)
+        .then(response => {
+          const { count, rows } = response.data;
+          this.items = rows;
+          this.totalPage = (count / 100).toFixed(0);
+          this.loading = false;
+        })
+        .catch(error => {
+          console.log(error);
+          this.loading = false;
+        });
     }
+  },
+  created() {
+    this.loadVisit();
   }
 };
 </script>

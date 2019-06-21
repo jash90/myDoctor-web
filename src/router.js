@@ -33,7 +33,13 @@ export default new Router({
     {
       path: "/visit",
       name: "visit",
-      component: Visit
+      component: Visit,
+      children: [
+        {
+          path: ':id',
+          component: Visit
+        }
+      ],
     },
     {
       path: "/doctor",
@@ -41,15 +47,21 @@ export default new Router({
       component: Doctor,
       children: [
         {
-        path: ':id',
-        component: Doctor
-      }
-    ]
+          path: ':id',
+          component: Doctor
+        }
+      ]
     },
     {
       path: "/pantient",
       name: "pantient",
-      component: Pantient
+      component: Pantient,
+      children: [
+        {
+          path: ':id',
+          component: Pantient
+        }
+      ],
     },
     {
       path: "/register",
