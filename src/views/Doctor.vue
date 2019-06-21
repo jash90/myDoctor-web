@@ -21,21 +21,27 @@
         type="text"
         class="col-3"
       ></b-form-input>
-    </div> -->
-    <b-table
-      ref="table"
-      selectable
-      select-mode="single"
-      @row-selected="select"
-      striped
-      hover
-      small
-      fixed
-      :items="items"
-      :fields="fields"
-      show-empty
-    ></b-table>
-    <b-pagination v-model="id" total-rows="10" per-page="1" class="my-0"></b-pagination>
+    </div>-->
+      <b-table
+        ref="table"
+        selectable
+        select-mode="single"
+        @row-selected="select"
+        striped
+        hover
+        small
+        fixed
+        :items="items"
+        :fields="fields"
+        show-empty
+      ></b-table>
+      <b-pagination
+        v-model="page"
+        :total-rows="totalPage"
+        per-page="1"
+        class="my-0"
+        @change="changePage"
+      ></b-pagination>
     <b-modal
       ref="edit"
       :title="selected !== null ? 'Edycja doktora':'Dodaj doktora'"
@@ -101,7 +107,10 @@ export default {
       editFirstname: "",
       editLastname: "",
       editSpecialization: "",
-      selected: null
+      selected: null,
+      page: 1,
+      totalPage: 10,
+      loading: false
     };
   },
   methods: {
@@ -175,7 +184,33 @@ export default {
       this.editFirstname = "";
       this.editLastname = "";
       this.editSpecialization = "";
+    },
+    changePage(id) {
+      var router = "/doctor";
+      if (id > 1) router += "/" + id;
+      this.$router.push(router);
+      this.loadDoctors();
+    },
+    async loadDoctors() {
+      this.loading = true;
+      this.page = this.$route.params.id;
+      if (this.page === undefined) this.page = 1;
+      this.$api
+        .get(`doctors/${this.page - 1}`)
+        .then(response => {
+          const { count, rows } = response.data;
+          this.items = rows;
+          this.totalPage = (count / 100).toFixed(0);
+          this.loading = false;
+        })
+        .catch(error => {
+          console.log(error);
+          this.loading = false;
+        });
     }
+  },
+  created() {
+    this.loadDoctors();
   }
 };
 </script>
