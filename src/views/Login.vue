@@ -2,7 +2,7 @@
   <div id="login">
     <b-form class="form">
       <h1>Logowanie</h1>
-      <b-form-input class="input" type="email" v-model="email" required placeholder="email"/>
+      <b-form-input class="input" type="email" v-model="login" required placeholder="email"/>
       <b-form-input
         class="input"
         type="password"
@@ -10,7 +10,7 @@
         required
         placeholder="password"
       />
-      <b-button class="button" variant="primary" href="visit">Zaloguj</b-button>
+      <b-button class="button" variant="primary" @click="signIn">Zaloguj</b-button>
     </b-form>
   </div>
 </template>
@@ -25,6 +25,16 @@ export default {
       login: "",
       password: ""
     };
+  },
+  methods: {
+    signIn(){
+      localStorage.logging = true;
+      localStorage.login = this.login;   
+      this.$router.push('/home');
+    },
+    login(){
+      
+    }
   }
 };
 </script>
