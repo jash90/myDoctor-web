@@ -240,7 +240,7 @@ export default {
         .then(response => {
           const { count, rows } = response.data;
           this.items = rows;
-          this.totalPage = (count / 100).toFixed(0);
+          this.totalPage = Math.ceil(count / 100);
           this.loading = false;
         })
         .catch(error => {
