@@ -43,6 +43,14 @@
             <b-button block variant="outline-primary" href="register">Rejestruj użytkownika</b-button>
           </b-row>
         </b-col>
+         <b-col>
+          <b-row>
+            <H1>Harmonogram</H1>
+          </b-row>
+          <b-row>
+            <b-button block variant="outline-primary" href="schedule">Lista harmonogramów</b-button>
+          </b-row>
+        </b-col>
       </b-row>
     </b-container>
   </div>

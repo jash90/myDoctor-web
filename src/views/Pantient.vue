@@ -28,21 +28,71 @@
       :fields="fields"
       show-empty
     ></b-table>
-    <b-pagination v-model="page" :total-rows="totalPage" per-page="1" class="my-0" @change="changePage"></b-pagination>
+    <b-pagination
+      v-model="page"
+      :total-rows="totalPage"
+      per-page="1"
+      class="my-0"
+      @change="changePage"
+    ></b-pagination>
     <b-modal
-      ref="edit"
       :title="!!selected ? 'Edycja pacjenta':'Dodaj pacjenta'"
       centered
       @ok="ok"
       @cancel="cancel"
+      no-close-on-backdrop
+      no-close-on-esc
+      v-model="visible"
     >
-      <b-form-input v-model="editFirstname" placeholder="Podaj imię" type="text"></b-form-input>
-      <b-form-input v-model="editLastname" placeholder="Podaj nazwisko" type="text"></b-form-input>
-      <b-form-input v-model="editStreet" placeholder="Podaj ulicę" type="text"></b-form-input>
-      <b-form-input v-model="editCity" placeholder="Podaj miasto" type="text"></b-form-input>
-      <b-form-input v-model="editPostcode" placeholder="Podaj kod pocztowy" type="text"></b-form-input>
-      <b-form-input v-model="editPhone" placeholder="Podaj telefon" type="number"></b-form-input>
-      <b-form-input v-model="editPesel" placeholder="Podaj pesel" type="number"></b-form-input>
+      <b-form-input
+        v-model="editFirstname"
+        placeholder="Podaj imię"
+        type="text"
+        :state="validationFirstname"
+        required
+      ></b-form-input>
+      <b-form-input
+        v-model="editLastname"
+        placeholder="Podaj nazwisko"
+        type="text"
+        :state="validationLastname"
+        required
+      ></b-form-input>
+      <b-form-input
+        v-model="editStreet"
+        placeholder="Podaj ulicę"
+        type="text"
+        :state="validationStreet"
+        required
+      ></b-form-input>
+      <b-form-input
+        v-model="editCity"
+        placeholder="Podaj miasto"
+        type="text"
+        :state="validationCity"
+        required
+      ></b-form-input>
+      <b-form-input
+        v-model="editPostcode"
+        placeholder="Podaj kod pocztowy"
+        type="text"
+        :state="validationPostcode"
+        required
+      ></b-form-input>
+      <b-form-input
+        v-model="editPhone"
+        placeholder="Podaj telefon"
+        type="number"
+        :state="validationPhone"
+        required
+      ></b-form-input>
+      <b-form-input
+        v-model="editPesel"
+        placeholder="Podaj pesel"
+        type="number"
+        :state="validationPesel"
+        required
+      ></b-form-input>
     </b-modal>
   </div>
 </template>
@@ -51,6 +101,38 @@
 export default {
   name: "visit",
   components: {},
+  computed: {
+    validationFirstname() {
+      return this.editFirstname.length > 0 ? true : false;
+    },
+    validationLastname() {
+      return this.editLastname.length > 0 ? true : false;
+    },
+    validationStreet() {
+      return this.editStreet.length > 0 ? true : false;
+    },
+    validationCity() {
+      return this.editCity.length > 0 ? true : false;
+    },
+    validationPostcode() {
+      var regex = /[0-9]{2}-[0-9]{3}/g;
+      return !!this.editPostcode.match(regex);
+    },
+    validationPhone() {
+      var regex = /[1-9]{1}[0-9]{8}/g;
+      return !!this.editPhone.match(regex);
+    },
+    validationPesel() {
+      let weight = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3];
+      let sum = 0;
+      let controlNumber = parseInt(this.editPesel.substring(10, 11));
+      for (let i = 0; i < weight.length; i++) {
+        sum += parseInt(this.editPesel.substring(i, i + 1)) * weight[i];
+      }
+      sum = sum % 10;
+      return 10 - sum === controlNumber;
+    }
+  },
   data: () => {
     return {
       fields: {
@@ -115,11 +197,12 @@ export default {
       editStreet: "",
       editCity: "",
       editPostcode: "",
-      editPhone: null,
-      editPesel: null,
+      editPhone: "",
+      editPesel: "",
       selected: null,
-            page: 1,
-      totalPage: 10
+      page: 1,
+      totalPage: 10,
+      visible: false
     };
   },
   methods: {
@@ -171,10 +254,10 @@ export default {
       this.editPostcode = postcode;
       this.editPhone = phone;
       this.editPesel = pesel;
-      this.$refs["edit"].show();
+      this.visible = true;
     },
     add() {
-      this.$refs["edit"].show();
+      this.visible = true;
     },
     cancel() {
       this.selected = null;
@@ -183,29 +266,14 @@ export default {
       this.editStreet = "";
       this.editCity = "";
       this.editPostcode = "";
-      this.editPhone = null;
-      this.editPesel = null;
+      this.editPhone = "";
+      this.editPesel = "";
     },
-    ok() {
+    async ok() {
       if (this.selected) {
         const index = this.items.findIndex(item => item === this.selected);
-        this.items[index].firstname = this.editFirstname;
-        this.items[index].lastname = this.editLastname;
-        this.items[index].street = this.editStreet;
-        this.items[index].city = this.editCity;
-        this.items[index].postcode = this.editPostcode;
-        this.items[index].phone = this.editPhone;
-        this.items[index].pesel = this.editPesel;
-        this.selected = null;
-        this.editFirstname = "";
-        this.editLastname = "";
-        this.editStreet = "";
-        this.editCity = "";
-        this.editPostcode = "";
-        this.editPhone = null;
-        this.editPesel = null;
-      } else {
-        this.items.push({
+        const response = await this.$api.post(`pantient/edit`, {
+          id: this.items[index].id,
           firstname: this.editFirstname,
           lastname: this.editLastname,
           street: this.editStreet,
@@ -214,16 +282,77 @@ export default {
           phone: this.editPhone,
           pesel: this.editPesel
         });
-        this.selected = null;
-        this.editFirstname = "";
-        this.editLastname = "";
-        this.editStreet = "";
-        this.editCity = "";
-        this.editPostcode = "";
-        this.editPhone = null;
-        this.editPesel = null;
+        const data = response.data;
+        if (data.item) {
+          this.$bvToast.toast("Dane zmienione.", {
+            title: "Edytowanie pacjenta.",
+            autoHideDelay: 5000
+          });
+        }
+        if (data.error) {
+          const error = data.error;
+          if (error.original)
+            this.$bvToast.toast(error.original.detail, {
+              title: "Edytowanie pacjenta.",
+              autoHideDelay: 5000,
+              appendToast: true
+            });
+          if (error.errors.length) {
+            let description = "";
+            description = error.errors.map(error => error.path).join(", ");
+            this.$bvToast.toast(`Niepoprawne dane w polach ${description}.`, {
+              title: "Edytowanie pacjenta.",
+              autoHideDelay: 5000,
+              appendToast: true
+            });
+          }
+        }
+      } else {
+       const response = await this.$api.post(`pantient/add`, {
+          firstname: this.editFirstname,
+          lastname: this.editLastname,
+          street: this.editStreet,
+          city: this.editCity,
+          postcode: this.editPostcode,
+          phone: this.editPhone,
+          pesel: this.editPesel
+        });
+        const data = response.data;
+        if (data.item) {
+          this.$bvToast.toast("Dodano pacjenta.", {
+            title: "Dodawanie pacjenta.",
+            autoHideDelay: 5000
+          });
+        }
+        if (data.error) {
+          const error = data.error;
+          if (error.original)
+            this.$bvToast.toast(error.original.detail, {
+              title: "Dodawanie pacjenta.",
+              autoHideDelay: 5000,
+              appendToast: true
+            });
+          if (error.errors.length) {
+            let description = "";
+            description = error.errors.map(error => error.path).join(", ");
+            this.$bvToast.toast(`Niepoprawne dane w polach ${description}.`, {
+              title: "Dodawanie pacjenta.",
+              autoHideDelay: 5000,
+              appendToast: true
+            });
+          }
+        }
       }
       this.$refs.table.clearSelected();
+      this.selected = null;
+      this.editFirstname = "";
+      this.editLastname = "";
+      this.editStreet = "";
+      this.editCity = "";
+      this.editPostcode = "";
+      this.editPhone = "";
+      this.editPesel = "";
+      this.loadPantients();
     },
     changePage(id) {
       var router = "/pantient";
