@@ -295,7 +295,6 @@ export default {
       this.loadDoctors();
     },
     async loadDoctors() {
-      this.loading = true;
       this.page = this.$route.params.id;
       if (this.page === undefined) this.page = 1;
       this.$api
@@ -304,11 +303,9 @@ export default {
           const { count, rows } = response.data;
           this.items = rows;
           this.totalPage = Math.ceil(count / 100);
-          this.loading = false;
         })
         .catch(error => {
           console.log(error);
-          this.loading = false;
         });
     },
   },
