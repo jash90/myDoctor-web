@@ -2,14 +2,27 @@
   <div id="schedule">
     <h1>Harmonogram</h1>
     <div class="form">
-      <b-form-input list="my-list-id" v-model="selected" @change="getSchedule"></b-form-input>
+      <b-form-input list="my-list-id" v-model="selected" @change="getSchedule" placeholder="Wybierz lekarza">
+      </b-form-input>
       <datalist id="my-list-id">
         <option v-for="size in items" v-bind:key="size.id">{{ size.firstname + ' '+size.lastname}}</option>
       </datalist>
       <div class="searchBar">
-        <b-button variant="primary" :disabled="!!selectedSchedule" @click="add">Dodaj</b-button>
-        <b-button variant="secondary" :disabled="!selectedSchedule" @click="edit">Edytuj</b-button>
-        <b-button variant="danger" :disabled="!selectedSchedule" @click="remove">Usuń</b-button>
+        <b-button
+          variant="primary"
+          :disabled="!selectedDoctor || !!selectedSchedule || schedules.length == 7"
+          @click="add"
+        >Dodaj</b-button>
+        <b-button
+          variant="secondary"
+          :disabled="!selectedDoctor || !selectedSchedule"
+          @click="edit"
+        >Edytuj</b-button>
+        <b-button
+          variant="danger"
+          :disabled="!selectedDoctor || !selectedSchedule"
+          @click="remove"
+        >Usuń</b-button>
       </div>
       <b-table
         ref="table"
@@ -28,11 +41,13 @@
       </b-table>
     </div>
     <b-modal
-      title="Edycja harmonogramu"
+      :title="!selectedDoctor?'Edycja harmonogramu':'Dodanie harmonogramu'"
       centered
       no-close-on-backdrop
       no-close-on-esc
       v-model="visible"
+      @ok="ok"
+      @cancel="cancel"
     >
       <div>
         <b-form-select class="mb-3" v-model="dayOfWeek" :options="optionsDays"></b-form-select>
@@ -46,20 +61,33 @@
 <script>
 // @ is an alias to /src
 export default {
-  name: "login",
+  name: "schedule",
   components: {},
   computed: {
     secondOption() {
       return this.options.filter(item => item.value > this.hourOpen);
     },
     optionsDays() {
-        return this.daysWeek.filter(
-          item =>
-            item.value === this.dayOfWeek ||
-            !this.schedules
-              .map(schedule => schedule.dayOfWeek)
-              .includes(item.value)
+      return this.daysWeek.filter(
+        item =>
+          item.value === this.dayOfWeek ||
+          !this.schedules
+            .map(schedule => schedule.dayOfWeek)
+            .includes(item.value)
+      );
+    },
+    selectedDoctor() {
+      let item = null;
+      if (this.selected) {
+        const split = this.selected.split(" ");
+        const firstname = split[0];
+        const lastname = split[1];
+        const index = this.items.findIndex(
+          item => item.firstname === firstname && item.lastname === lastname
         );
+        item = this.items[index];
+      }
+      return item;
     }
   },
   data: () => {
@@ -152,24 +180,95 @@ export default {
       this.dayOfWeek = -1;
       this.selectedSchedule = null;
     },
-    async ok() {},
+    async ok() {
+      let change = false;
+      if (this.selected && this.selectedSchedule) {
+        const response = await this.$api.post(`schedule/edit`, {
+          id: this.selectedSchedule.id,
+          dayOfWeek: this.dayOfWeek,
+          hourOpen: `${this.hourOpen < 10 ? "0" : ""}${this.hourOpen}:00:00`,
+          hourClose: `${this.hourClose < 10 ? "0" : ""}${this.hourClose}:00:00`
+        });
+        const data = response.data;
+        if (data.item) {
+          this.$bvToast.toast("Dane zmienione.", {
+            title: "Edycja harmonogramu.",
+            autoHideDelay: 5000
+          });
+          change = true;
+        }
+        if (data.error) {
+          const error = data.error;
+          if (error.original)
+            this.$bvToast.toast(error.original.detail, {
+              title: "Edycja harmonogramu.",
+              autoHideDelay: 5000,
+              appendToast: true
+            });
+          if (error.errors.length) {
+            let description = "";
+            description = error.errors.map(error => error.path).join(", ");
+            this.$bvToast.toast(`Niepoprawne dane w polach ${description}.`, {
+              title: "Edycja harmonogramu.",
+              autoHideDelay: 5000,
+              appendToast: true
+            });
+          }
+        }
+      } else {
+        const response = await this.$api.post(`schedule/add`, {
+          doctorId: this.selectedDoctor.id,
+          dayOfWeek: this.dayOfWeek,
+          hourOpen: `${this.hourOpen < 10 ? "0" : ""}${this.hourOpen}:00:00`,
+          hourClose: `${this.hourClose < 10 ? "0" : ""}${this.hourClose}:00:00`
+        });
+        const data = response.data;
+        if (data.item) {
+          this.$bvToast.toast("Dodano harmonogram.", {
+            title: "Dodawanie harmonogramu.",
+            autoHideDelay: 5000
+          });
+          change = true;
+        }
+        if (data.error) {
+          const error = data.error;
+          if (error.original)
+            this.$bvToast.toast(error.original.detail, {
+              title: "Dodawanie harmonogramu.",
+              autoHideDelay: 5000,
+              appendToast: true
+            });
+          if (error.errors.length) {
+            let description = "";
+            description = error.errors.map(error => error.path).join(", ");
+            this.$bvToast.toast(`Niepoprawne dane w polach ${description}.`, {
+              title: "Dodawanie harmonogramu.",
+              autoHideDelay: 5000,
+              appendToast: true
+            });
+          }
+        }
+      }
+      if (change) {
+        this.$refs.table.clearSelected();
+        this.getSchedule();
+        this.daysWeek = -1;
+        this.hourOpen = 0;
+        this.hourClose = 0;
+      }
+    },
     getSchedule() {
       if (this.selected.length > 0) {
-        const split = this.selected.split(" ");
-        const firstname = split[0];
-        const lastname = split[1];
-        const index = this.items.findIndex(
-          item => item.firstname === firstname && item.lastname === lastname
-        );
-        const item = this.items[index];
         this.$api
-          .get(`schedule/search/${item.id}`)
+          .get(`schedule/search/${this.selectedDoctor.id}`)
           .then(response => {
             this.schedules = response.data;
           })
           .catch(error => {
             console.log(error);
           });
+      } else {
+        this.schedules = [];
       }
     },
     loadDoctors() {
@@ -177,7 +276,6 @@ export default {
         .get(`alldoctors`)
         .then(response => {
           this.items = response.data;
-          console.log(response);
         })
         .catch(error => {
           console.log(error);
@@ -208,5 +306,12 @@ export default {
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
+}
+.searchBar{
+    display: flex;
+    width: 100%;
+    padding: 10px 0px;
+}
+button{
 }
 </style>

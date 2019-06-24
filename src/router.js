@@ -75,5 +75,4 @@ export default new Router({
       component: Schedule
     }
   ],
-
 });
