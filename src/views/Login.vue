@@ -48,10 +48,6 @@ export default {
       });
       const data = response.data;
       if (data.item) {
-        this.$bvToast.toast(`Użytkownik ${this.login} zalogowany.`, {
-          title: "Logowanie użytkownika.",
-          autoHideDelay: 5000
-        });
         this.$store.dispatch("login", {email: this.login});
         this.$router.push("/home");
       }
