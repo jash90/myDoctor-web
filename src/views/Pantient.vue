@@ -210,7 +210,7 @@ export default {
       this.selected = items[0];
     },
     remove() {
-      const { firstname, lastname, pesel } = this.selected;
+      const { firstname, lastname, pesel, id } = this.selected;
       this.$bvModal
         .msgBoxConfirm(
           `Czy chcesz usunąć pacjenta ${firstname} ${lastname} o numerze Pesel ${pesel} ?`,
@@ -227,11 +227,34 @@ export default {
             centered: true
           }
         )
-        .then(value => {
-          if (value) {
-            const index = this.items.findIndex(item => item === this.selected);
-            if (index > -1) this.items.splice(index, 1);
+        .then(async () => {
+          const response = await this.$api.delete(`pantient/remove/${id}`);
+          const data = response.data;
+          if (data.item) {
+            this.$bvToast.toast("Usunięto dane.", {
+              title: "Usuwanie harmonogramu.",
+              autoHideDelay: 5000
+            });
           }
+          if (data.error) {
+            const error = data.error;
+            if (error.original)
+              this.$bvToast.toast(error.original.detail, {
+                title: "Usuwanie harmonogramu.",
+                autoHideDelay: 5000,
+                appendToast: true
+              });
+            if (error.errors.length) {
+              let description = "";
+              description = error.errors.map(error => error.path).join(", ");
+              this.$bvToast.toast(`Niepoprawne dane w polach ${description}.`, {
+                title: "Usuwanie harmonogramu.",
+                autoHideDelay: 5000,
+                appendToast: true
+              });
+            }
+          }
+          this.loadPantients();
         })
         .catch(error => {
           console.log(error);
@@ -268,6 +291,7 @@ export default {
       this.editPostcode = "";
       this.editPhone = "";
       this.editPesel = "";
+      this.$refs.table.clearSelected();
     },
     async ok() {
       if (this.selected) {
@@ -308,7 +332,7 @@ export default {
           }
         }
       } else {
-       const response = await this.$api.post(`pantient/add`, {
+        const response = await this.$api.post(`pantient/add`, {
           firstname: this.editFirstname,
           lastname: this.editLastname,
           street: this.editStreet,
@@ -366,7 +390,7 @@ export default {
       this.$api
         .get(`pantients/${this.page - 1}`)
         .then(response => {
-          const { count, rows } = response.data;
+          const { count, rows } = response.data.items;
           this.items = rows;
           this.totalPage = Math.ceil(count / 100);
         })

@@ -2,10 +2,17 @@
   <div id="schedule">
     <h1>Harmonogram</h1>
     <div class="form">
-      <b-form-input list="my-list-id" v-model="selected" @change="getSchedule" placeholder="Wybierz lekarza">
-      </b-form-input>
+      <b-form-input
+        list="my-list-id"
+        v-model="selected"
+        @change="getSchedule"
+        placeholder="Wybierz lekarza"
+      ></b-form-input>
       <datalist id="my-list-id">
-        <option v-for="size in items" v-bind:key="size.id">{{ size.firstname + ' '+size.lastname}}</option>
+        <option
+          v-for="schedule in items"
+          v-bind:key="schedule.id"
+        >{{ schedule.firstname + ' '+schedule.lastname}}</option>
       </datalist>
       <div class="searchBar">
         <b-button
@@ -137,7 +144,7 @@ export default {
       this.selectedSchedule = items[0];
     },
     remove() {
-      const { dayOfWeek } = this.selectedSchedule;
+      const { dayOfWeek, id } = this.selectedSchedule;
       this.$bvModal
         .msgBoxConfirm(
           `Czy chcesz usunąć harmonogram ${this.days[dayOfWeek]} ?`,
@@ -154,10 +161,32 @@ export default {
             centered: true
           }
         )
-        .then(value => {
-          if (value) {
-            const index = this.items.findIndex(item => item === this.selected);
-            if (index > -1) this.items.splice(index, 1);
+        .then(async () => {
+          const response = await this.$api.delete(`schedule/remove/${id}`);
+          const data = response.data;
+          if (data.item) {
+            this.$bvToast.toast("Usunięto dane.", {
+              title: "Usuwanie harmonogramu.",
+              autoHideDelay: 5000
+            });
+          }
+          if (data.error) {
+            const error = data.error;
+            if (error.original)
+              this.$bvToast.toast(error.original.detail, {
+                title: "Usuwanie harmonogramu.",
+                autoHideDelay: 5000,
+                appendToast: true
+              });
+            if (error.errors.length) {
+              let description = "";
+              description = error.errors.map(error => error.path).join(", ");
+              this.$bvToast.toast(`Niepoprawne dane w polach ${description}.`, {
+                title: "Usuwanie harmonogramu.",
+                autoHideDelay: 5000,
+                appendToast: true
+              });
+            }
           }
         })
         .catch(error => {
@@ -179,6 +208,7 @@ export default {
       this.hourClose = 0;
       this.dayOfWeek = -1;
       this.selectedSchedule = null;
+      this.$refs.table.clearSelected();
     },
     async ok() {
       let change = false;
@@ -262,7 +292,7 @@ export default {
         this.$api
           .get(`schedule/search/${this.selectedDoctor.id}`)
           .then(response => {
-            this.schedules = response.data;
+            this.schedules = response.data.item;
           })
           .catch(error => {
             console.log(error);
@@ -275,7 +305,7 @@ export default {
       this.$api
         .get(`alldoctors`)
         .then(response => {
-          this.items = response.data;
+          this.items = response.data.items;
         })
         .catch(error => {
           console.log(error);
@@ -307,11 +337,11 @@ export default {
   justify-content: space-around;
   align-items: center;
 }
-.searchBar{
-    display: flex;
-    width: 100%;
-    padding: 10px 0px;
+.searchBar {
+  display: flex;
+  width: 100%;
+  padding: 10px 0px;
 }
-button{
+button {
 }
 </style>
