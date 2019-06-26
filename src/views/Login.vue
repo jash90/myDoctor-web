@@ -27,13 +27,52 @@ export default {
     };
   },
   methods: {
-    signIn(){
-      localStorage.logging = true;
-      localStorage.login = this.login;   
-      this.$router.push('/home');
-    },
-    login(){
-      
+    async signIn() {
+      if (this.login.length === 0) {
+        this.$bvToast.toast(`Podaj email.`, {
+          title: "Logowanie użytkownika.",
+          autoHideDelay: 5000
+        });
+        return;
+      }
+      if (this.password.length === 0) {
+        this.$bvToast.toast(`Podaj email.`, {
+          title: "Logowanie użytkownika.",
+          autoHideDelay: 5000
+        });
+        return;
+      }
+      const response = await this.$api.post(`login`, {
+        email: this.login,
+        password: this.password
+      });
+      const data = response.data;
+      if (data.item) {
+        this.$bvToast.toast(`Użytkownik ${this.login} zalogowany.`, {
+          title: "Logowanie użytkownika.",
+          autoHideDelay: 5000
+        });
+        this.$store.dispatch("login", {email: this.login});
+        this.$router.push("/home");
+      }
+      if (data.error) {
+        const error = data.error;
+        if (error.original)
+          this.$bvToast.toast(error.original.detail, {
+            title: "Logowanie użytkownika.",
+            autoHideDelay: 5000,
+            appendToast: true
+          });
+        if (error.errors.length) {
+          let description = "";
+          description = error.errors.map(error => error.path).join(", ");
+          this.$bvToast.toast(`Niepoprawne dane w polach ${description}.`, {
+            title: "Logowanie użytkownika.",
+            autoHideDelay: 5000,
+            appendToast: true
+          });
+        }
+      }
     }
   }
 };

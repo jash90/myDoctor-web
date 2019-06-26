@@ -1,47 +1,22 @@
 <template>
   <div id="app">
-    <b-navbar type="dark" variant="info">
-      <b-navbar-brand :href="logging?'/home':'/'">MyDoctor</b-navbar-brand>
-      <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-      <b-collapse id="nav-collapse" is-nav v-if="logging">
-        <b-navbar-nav class="ml-auto">
-          <b-nav-item-dropdown right>
-            <template slot="button-content">
-              <em>{{login}}</em>
-            </template>
-            <b-dropdown-item @click="logout">Wyloguj</b-dropdown-item>
-          </b-nav-item-dropdown>
-        </b-navbar-nav>
-      </b-collapse>
+    <b-navbar type="dark" >
+      <b-navbar-brand :href="isLogged?'/home':'/'">MyDoctor</b-navbar-brand>
+      <b-button @click="logout" v-if="isLogged">Wyloguj</b-button>
     </b-navbar>
     <router-view/>
     <div class="footer">© 2018 Copyright: Szymon Zimny i Miłosz Winnicki</div>
   </div>
 </template>
 <script>
-// @ is an alias to /src
+import { mapGetters } from "vuex";
 export default {
   name: "app",
-  components: {},
-  data: () => {
-    return {
-      logging :false,
-      login:''
-    };
-  },
-   mounted() {
-    if (localStorage.login) {
-      this.login = localStorage.login;
-    }
-    if (localStorage.logging) {
-      this.logging = localStorage.logging;
-    }
-  },
+  computed: mapGetters(["isLogged"]),
   methods: {
     logout() {
-      localStorage.logging = this.logging;
-      localStorage.login = this.login;
-      this.$router.push("/");
+      this.$store.dispatch("logout");
+      this.$router.push('/');
     }
   }
 };
@@ -55,5 +30,11 @@ export default {
   justify-content: center;
   color: white;
   background-color: #18a2b8;
+}
+.navbar{
+  background: #18a2b8;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 </style>
