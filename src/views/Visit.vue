@@ -197,6 +197,7 @@ export default {
               });
             }
           }
+          this.loadVisit();
         })
         .catch(error => {
           console.log(error);
@@ -231,7 +232,7 @@ export default {
           id: this.selected.id,
           doctorId: this.selectedDoctor.id,
           pantientId: this.selectedPantient.id,
-          date: this.editDate + " " + this.editTime,
+          date: new Date(this.editDate + " " + this.editTime),
           description: this.editDescription
         });
         const data = response.data;
@@ -264,7 +265,7 @@ export default {
         const response = await this.$api.post(`visit/add`, {
           doctorId: this.selectedDoctor.id,
           pantientId: this.selectedPantient.id,
-          date: this.editDate + " " + this.editTime,
+          date: new Date(this.editDate + " " + this.editTime),
           description: this.editDescription
         });
         const data = response.data;
@@ -296,13 +297,13 @@ export default {
       }
       if (change) {
         this.$refs.table.clearSelected();
-        this.loadVisit();
         this.editDoctor = null;
         this.editPantient = null;
         this.editDate = null;
         this.editTime = null;
         this.editDescription = "";
       }
+      this.loadVisit();
     },
     changeHour() {
       if (!this.editTime) {
@@ -332,7 +333,7 @@ export default {
       this.$api
         .get(`visits/${this.page - 1}`)
         .then(response => {
-          const { count, rows } = response.data.items;
+          const { count, rows } = response.data;
           this.items = rows;
           this.totalPage = Math.ceil(count / 100);
         })
@@ -364,7 +365,7 @@ export default {
       this.$api
         .get(`/visit/day/${doctorId}`)
         .then(response => {
-          this.freeDate = response.data.items;
+          this.freeDate = response.data;
           this.freeDay = this.freeDate.map(data =>
             moment(data).format("DD.MM.YYYY")
           );

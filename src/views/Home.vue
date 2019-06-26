@@ -9,9 +9,6 @@
           <b-row>
             <b-button block variant="outline-primary" href="doctor">Lista lekarzy</b-button>
           </b-row>
-          <b-row>
-            <b-button block variant="outline-primary">Dodaj lekarza</b-button>
-          </b-row>
         </b-col>
         <b-col>
           <b-row>
@@ -20,9 +17,6 @@
           <b-row>
             <b-button block variant="outline-primary" href="pantient">Lista pacjentów</b-button>
           </b-row>
-          <b-row>
-            <b-button block variant="outline-primary">Dodaj pacjenta</b-button>
-          </b-row>
         </b-col>
         <b-col>
           <b-row>
@@ -30,9 +24,6 @@
           </b-row>
           <b-row>
             <b-button block variant="outline-primary" href="visit">Lista wizyt</b-button>
-          </b-row>
-          <b-row>
-            <b-button block variant="outline-primary">Rejestruj wizytę</b-button>
           </b-row>
         </b-col>
          <b-col>
