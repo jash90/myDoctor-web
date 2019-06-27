@@ -169,6 +169,7 @@ export default {
               title: "Usuwanie harmonogramu.",
               autoHideDelay: 5000
             });
+               this.getSchedule();
           }
           if (data.error) {
             const error = data.error;
@@ -282,7 +283,7 @@ export default {
       if (change) {
         this.$refs.table.clearSelected();
         this.getSchedule();
-        this.daysWeek = -1;
+        this.dayOfWeek = -1;
         this.hourOpen = 0;
         this.hourClose = 0;
       }
