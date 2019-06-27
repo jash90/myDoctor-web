@@ -227,12 +227,13 @@ export default {
     },
     async ok() {
       let change = false;
+       const date = moment.utc(this.editDate + " " + this.editTime, "DD-MM-YYYY HH:mm").toDate();
       if (this.selected) {
         const response = await this.$api.post(`visit/edit`, {
           id: this.selected.id,
           doctorId: this.selectedDoctor.id,
           pantientId: this.selectedPantient.id,
-          date: new Date(this.editDate + " " + this.editTime),
+          date,
           description: this.editDescription
         });
         const data = response.data;
@@ -265,7 +266,7 @@ export default {
         const response = await this.$api.post(`visit/add`, {
           doctorId: this.selectedDoctor.id,
           pantientId: this.selectedPantient.id,
-          date: new Date(this.editDate + " " + this.editTime),
+          date,
           description: this.editDescription
         });
         const data = response.data;
