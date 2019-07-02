@@ -1,10 +1,10 @@
 <template>
   <div id="app">
-    <b-navbar type="dark" >
+    <b-navbar type="dark">
       <b-navbar-brand :href="isLogged?'/home':'/'">MyDoctor</b-navbar-brand>
       <b-button @click="logout" v-if="isLogged">Wyloguj</b-button>
     </b-navbar>
-    <router-view/>
+    <router-view />
     <div class="footer">© 2018 Copyright: Szymon Zimny i Miłosz Winnicki</div>
   </div>
 </template>
@@ -16,7 +16,17 @@ export default {
   methods: {
     logout() {
       this.$store.dispatch("logout");
-      this.$router.push('/');
+      this.$router.push("/");
+    }
+  },
+  created() {
+    const name = this.$router.history.current.name;
+    if (name === "start" || (name === "login" && this.isLogged)) {
+      this.$router.push("/home");
+    }
+    if (name === "start" || name === "404" || name === "login") return;
+    if (!this.isLogged) {
+      this.$router.push("/404");
     }
   }
 };
@@ -31,7 +41,7 @@ export default {
   color: white;
   background-color: #18a2b8;
 }
-.navbar{
+.navbar {
   background: #18a2b8;
   display: flex;
   flex-direction: row;
