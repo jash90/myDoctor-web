@@ -2,7 +2,7 @@
   <div id="login">
     <b-form class="form">
       <h1>Logowanie</h1>
-      <b-form-input class="input" type="email" v-model="login" required placeholder="email"/>
+      <b-form-input class="input" type="email" v-model="login" required placeholder="email" />
       <b-form-input
         class="input"
         type="password"
@@ -48,8 +48,14 @@ export default {
       });
       const data = response.data;
       if (data.item) {
-        this.$store.dispatch("login", {email: this.login});
+        this.$store.dispatch("login", { email: this.login });
         this.$router.push("/home");
+      } else {
+        this.$bvToast.toast("Niepoprawny email lub hasło", {
+          title: "Logowanie użytkownika.",
+          autoHideDelay: 5000,
+          appendToast: true
+        });
       }
       if (data.error) {
         const error = data.error;

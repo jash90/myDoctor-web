@@ -21,10 +21,11 @@ export default {
   },
   created() {
     const name = this.$router.history.current.name;
-    if (name === "start" || (name === "login" && this.isLogged)) {
+    if ((name === "start" || (name === "login")) && this.isLogged !== null) {
       this.$router.push("/home");
     }
     if (name === "start" || name === "404" || name === "login") return;
+
     if (!this.isLogged) {
       this.$router.push("/404");
     }
