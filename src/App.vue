@@ -21,7 +21,7 @@ export default {
   },
   created() {
     const name = this.$router.history.current.name;
-    if ((name === "start" || (name === "login")) && this.isLogged !== null) {
+    if ((name === "start" || name === "login") && this.isLogged !== null) {
       this.$router.push("/home");
     }
     if (name === "start" || name === "404" || name === "login") return;
@@ -32,7 +32,7 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style>
 #app {
 }
 .footer {
@@ -47,5 +47,8 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+button {
+  margin-right: 10px;
 }
 </style>
