@@ -4,29 +4,35 @@ import Vuex from "vuex";
 Vue.use(Vuex);
 
 const types = {
-  LOGIN: 'LOGIN',
-  LOGOUT: 'LOGOUT'
-}
+  LOGIN: "LOGIN",
+  LOGOUT: "LOGOUT"
+};
 
 const state = {
-  logged: localStorage.getItem('token')
-}
+  logged: localStorage.getItem("token")
+};
 
 const getters = {
   isLogged: state => state.logged
-}
+};
 
 const actions = {
-  login({ commit }, credential) {
-    localStorage.setItem('token', credential.email);
+  login({
+    commit
+  }, credential) {
+    localStorage.setItem("email", credential.email);
+    localStorage.setItem("token", credential.token);
     commit(types.LOGIN);
   },
 
-  logout({ commit }) {
-    localStorage.removeItem('token');
+  logout({
+    commit
+  }) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("email");
     commit(types.LOGOUT);
   }
-}
+};
 
 const mutations = {
   [types.LOGIN](state) {
@@ -36,11 +42,11 @@ const mutations = {
   [types.LOGOUT](state) {
     state.logged = 0;
   }
-}
+};
 
 export default new Vuex.Store({
   state,
   getters,
   actions,
   mutations
-})
+});

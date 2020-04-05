@@ -16,7 +16,6 @@
 </template>
 
 <script>
-// @ is an alias to /src
 export default {
   name: "login",
   components: {},
@@ -42,13 +41,16 @@ export default {
         });
         return;
       }
-      const response = await this.$api.post(`login`, {
+      const response = await this.$api.post(`users/auth`, {
         email: this.login,
         password: this.password
       });
       const data = response.data;
-      if (data.item) {
-        this.$store.dispatch("login", { email: this.login });
+      if (data.id) {
+        this.$store.dispatch("login", {
+          email: this.login,
+          token: `Bearer ${response.data.token}`
+        });
         this.$router.push("/home");
       } else {
         this.$bvToast.toast("Niepoprawny email lub hasło", {
@@ -68,6 +70,7 @@ export default {
         if (error.errors.length) {
           let description = "";
           description = error.errors.map(error => error.path).join(", ");
+          errorService(error);
           this.$bvToast.toast(`Niepoprawne dane w polach ${description}.`, {
             title: "Logowanie użytkownika.",
             autoHideDelay: 5000,

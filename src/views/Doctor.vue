@@ -43,7 +43,7 @@
       @change="changePage"
     ></b-pagination>
     <b-modal
-      :title="selected !== null ? 'Edycja doktora':'Dodaj doktora'"
+      :title="selected !== null ? 'Edycja doktora' : 'Dodaj doktora'"
       centered
       @ok="ok"
       @cancel="cancel"
@@ -84,6 +84,7 @@
 </template>
 
 <script>
+import errorMessage from "../errorUtil";
 export default {
   name: "doctor",
   components: {},
@@ -125,20 +126,7 @@ export default {
           sortable: true
         }
       },
-      items: [
-        {
-          numberPwz: "1234567",
-          firstname: "Janusz",
-          lastname: "Nowak",
-          specialization: "interna"
-        },
-        {
-          numberPwz: "1334567",
-          firstname: "Jan",
-          lastname: "Kowalski",
-          specialization: "urolog"
-        }
-      ],
+      items: [],
       selectedNumber: null,
       selectedFirstname: "",
       selectedLastname: "",
@@ -157,56 +145,32 @@ export default {
     select(items) {
       this.selected = items[0];
     },
-    remove() {
+    async remove() {
       const { firstname, lastname, numberPwz, id } = this.selected;
-      this.$bvModal
-        .msgBoxConfirm(
-          `Czy chcesz usunąć pana doktora ${firstname} ${lastname} o numerze PWZ ${numberPwz} ?`,
-          {
-            title: "Usuwanie lekarza",
-            size: "sm",
-            buttonSize: "sm",
-            okVariant: "secondary",
-            cancelVariant: "primary",
-            okTitle: "Usuń",
-            cancelTitle: "Nie",
-            footerClass: "p-2",
-            hideHeaderClose: true,
-            centered: true
-          }
-        )
-        .then(async () => {
-          const response = await this.$api.delete(`doctor/remove/${id}`);
-          const data = response.data;
-          if (data.item) {
-            this.$bvToast.toast("Usunięto dane.", {
-              title: "Usuwanie lekarza.",
-              autoHideDelay: 5000
-            });
-          }
-          if (data.error) {
-            const error = data.error;
-            if (error.original)
-              this.$bvToast.toast(error.original.detail, {
-                title: "Usuwanie lekarza.",
-                autoHideDelay: 5000,
-                appendToast: true
-              });
-            if (error.errors.length) {
-              let description = "";
-              description = error.errors.map(error => error.path).join(", ");
-              this.$bvToast.toast(`Niepoprawne dane w polach ${description}.`, {
-                title: "Usuwanie lekarza.",
-                autoHideDelay: 5000,
-                appendToast: true
-              });
-            }
-          }
-          this.loadDoctors();
-        })
-        .catch(error => {
-          console.log(error);
+      const modalConfirm = await this.$bvModal.msgBoxConfirm(
+        `Czy chcesz usunąć pana doktora ${firstname} ${lastname} o numerze PWZ ${numberPwz} ?`,
+        {
+          title: "Usuwanie lekarza",
+          size: "sm",
+          buttonSize: "sm",
+          okVariant: "secondary",
+          cancelVariant: "primary",
+          okTitle: "Usuń",
+          cancelTitle: "Nie",
+          footerClass: "p-2",
+          hideHeaderClose: true,
+          centered: true
+        }
+      );
+      if (!modalConfirm) return;
+      const response = await this.$api.delete(`doctors/${id}`);
+      if (response.status < 300)
+        this.$bvToast.toast("Usunięto dane.", {
+          title: "Usuwanie lekarza.",
+          autoHideDelay: 5000
         });
+
+      this.clear();
     },
     edit() {
       const { numberPwz, firstname, lastname, specialization } = this.selected;
@@ -225,6 +189,11 @@ export default {
       this.editFirstname = "";
       this.editLastname = "";
       this.editSpecialization = "";
+      this.$refs.table.clearSelected();
+    },
+    clear() {
+      this.cancel();
+      this.loadDoctors();
     },
     async ok() {
       if (
@@ -235,81 +204,43 @@ export default {
       )
         return;
 
-      if (this.selected) {
-        const index = this.items.findIndex(item => item === this.selected);
-        const response = await this.$api.post(`doctor/edit`, {
-          id: this.items[index].id,
-          numberPwz: this.editNumber,
-          firstname: this.editFirstname,
-          lastname: this.editLastname,
-          specialization: this.editSpecialization
-        });
-        const data = response.data;
-        if (data.item) {
-          this.$bvToast.toast("Dane zmienione.", {
-            title: "Edytowanie lekarza.",
-            autoHideDelay: 5000
-          });
-        }
-        if (data.error) {
-          const error = data.error;
-          if (error.original)
-            this.$bvToast.toast(error.original.detail, {
-              title: "Edytowanie lekarza.",
-              autoHideDelay: 5000,
-              appendToast: true
-            });
-          if (error.errors.length) {
-            let description = "";
-            description = error.errors.map(error => error.path).join(", ");
-            this.$bvToast.toast(`Niepoprawne dane w polach ${description}.`, {
-              title: "Edytowanie lekarza.",
-              autoHideDelay: 5000,
-              appendToast: true
-            });
-          }
-        }
-      } else {
-        const response = await this.$api.post(`doctor/add`, {
-          numberPwz: this.editNumber,
-          firstname: this.editFirstname,
-          lastname: this.editLastname,
-          specialization: this.editSpecialization
-        });
-        const data = response.data;
-        if (data.item) {
-          this.$bvToast.toast("Lekarz został dodany.", {
-            title: "Dodawanie lekarza.",
-            autoHideDelay: 5000
-          });
-        }
-        if (data.error) {
-          const error = data.error;
-          if (error.original)
-            this.$bvToast.toast(error.original.detail, {
-              title: "Dodawanie lekarza.",
-              autoHideDelay: 5000,
-              appendToast: true
-            });
-          if (error.errors.length) {
-            let description = "";
-            description = error.errors.map(error => error.path).join(", ");
-            this.$bvToast.toast(`Niepoprawne dane w polach ${description}.`, {
-              title: "Dodawanie lekarza.",
-              autoHideDelay: 5000,
-              appendToast: true
-            });
-          }
-        }
-      }
+      let doctor = {
+        numberPwz: this.editNumber,
+        firstname: this.editFirstname,
+        lastname: this.editLastname,
+        specialization: this.editSpecialization
+      };
 
-      this.$refs.table.clearSelected();
-      this.selected = null;
-      this.editNumber = "";
-      this.editFirstname = "";
-      this.editLastname = "";
-      this.editSpecialization = "";
-      this.loadDoctors();
+      let response = null;
+      try {
+        if (this.selected) {
+          const doctorId = this.items.find(i => i === this.selected).id;
+          response = await this.$api.put(`doctors/${doctorId}`, doctor);
+        } else {
+          response = await this.$api.post(`doctors`, doctor);
+        }
+        if (response.status < 300) {
+          this.$bvToast.toast(
+            this.selected ? "Dane zmienione." : "Lekarz został dodany.",
+            {
+              title: this.selected
+                ? "Edytowanie lekarza."
+                : "Dodawanie lekarza.",
+              autoHideDelay: 5000
+            }
+          );
+        }
+      } catch (error) {
+        this.$bvToast.toast(
+          `Niepoprawne dane w polach ${errorMessage(error)}.`,
+          {
+            title: this.selected ? "Edytowanie lekarza." : "Dodawanie lekarza.",
+            autoHideDelay: 5000,
+            appendToast: true
+          }
+        );
+      }
+      this.clear();
     },
     changePage(id) {
       var router = "/doctor";
@@ -321,14 +252,14 @@ export default {
       this.page = this.$route.params.id;
       if (this.page === undefined) this.page = 1;
       this.$api
-        .get(`doctors/${this.page - 1}`)
+        .get(`doctors/offset/${this.page - 1}`)
         .then(response => {
-          const { count, rows } = response.data.items;
+          const { count, rows } = response.data;
           this.items = rows;
           this.totalPage = Math.ceil(count / 100);
         })
         .catch(error => {
-          console.log(error);
+          console.log({ error });
         });
     }
   },

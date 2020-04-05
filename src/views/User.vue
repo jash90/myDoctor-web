@@ -56,17 +56,17 @@ export default {
         });
         return;
       }
-      const response = await this.$api.post(`register`, {
+      const response = await this.$api.post(`users`, {
         email: this.email,
         password: this.password
       });
       const data = response.data;
-      if (data.item) {
+      if (data.id) {
         this.$bvToast.toast(`Użytkownik ${this.email} zarejestrowany.`, {
           title: "Rejestracja użytkownika.",
           autoHideDelay: 5000
         });
-        this.$router.push('/');
+        this.$router.push("/");
       }
       if (data.error) {
         const error = data.error;
