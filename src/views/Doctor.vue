@@ -2,9 +2,15 @@
   <div id="doctor">
     <h1>Lekarze</h1>
     <div class="searchBar">
-      <b-button variant="primary" :disabled="!!selected" @click="add">Dodaj</b-button>
-      <b-button variant="secondary" :disabled="!selected" @click="edit">Edytuj</b-button>
-      <b-button variant="danger" :disabled="!selected" @click="remove">Usuń</b-button>
+      <b-button variant="primary" :disabled="!!selected" @click="add"
+        >Dodaj</b-button
+      >
+      <b-button variant="secondary" :disabled="!selected" @click="edit"
+        >Edytuj</b-button
+      >
+      <b-button variant="danger" :disabled="!selected" @click="remove"
+        >Usuń</b-button
+      >
     </div>
     <!-- <div class="searchBar">
       <b-form-input v-model="selectedNumber" placeholder="Podaj numer" type="number" class="col-3"></b-form-input>
@@ -84,7 +90,6 @@
 </template>
 
 <script>
-import errorMessage from "../errorUtil";
 export default {
   name: "doctor",
   components: {},
@@ -231,14 +236,11 @@ export default {
           );
         }
       } catch (error) {
-        this.$bvToast.toast(
-          `Niepoprawne dane w polach ${errorMessage(error)}.`,
-          {
-            title: this.selected ? "Edytowanie lekarza." : "Dodawanie lekarza.",
-            autoHideDelay: 5000,
-            appendToast: true
-          }
-        );
+        this.$bvToast.toast(`Niepoprawne dane.`, {
+          title: this.selected ? "Edytowanie lekarza." : "Dodawanie lekarza.",
+          autoHideDelay: 5000,
+          appendToast: true
+        });
       }
       this.clear();
     },

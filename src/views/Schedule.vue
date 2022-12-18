@@ -9,27 +9,31 @@
         placeholder="Wybierz lekarza"
       ></b-form-input>
       <datalist id="my-list-id">
-        <option
-          v-for="schedule in items"
-          v-bind:key="schedule.id"
-        >{{ schedule.firstname + ' '+schedule.lastname}}</option>
+        <option v-for="schedule in items" v-bind:key="schedule.id">{{
+          schedule.firstname + " " + schedule.lastname
+        }}</option>
       </datalist>
       <div class="searchBar">
         <b-button
           variant="primary"
-          :disabled="!selectedDoctor || !!selectedSchedule || schedules.length == 7"
+          :disabled="
+            !selectedDoctor || !!selectedSchedule || schedules.length == 7
+          "
           @click="add"
-        >Dodaj</b-button>
+          >Dodaj</b-button
+        >
         <b-button
           variant="secondary"
           :disabled="!selectedDoctor || !selectedSchedule"
           @click="edit"
-        >Edytuj</b-button>
+          >Edytuj</b-button
+        >
         <b-button
           variant="danger"
           :disabled="!selectedDoctor || !selectedSchedule"
           @click="remove"
-        >Usuń</b-button>
+          >Usuń</b-button
+        >
       </div>
       <b-table
         ref="table"
@@ -44,11 +48,13 @@
         show-empty
         @row-selected="select"
       >
-        <template slot="dayOfWeek" slot-scope="data">{{ days[data.item.dayOfWeek] }}</template>
+        <template slot="dayOfWeek" slot-scope="data">{{
+          days[data.item.dayOfWeek]
+        }}</template>
       </b-table>
     </div>
     <b-modal
-      :title="!selectedDoctor?'Edycja harmonogramu':'Dodanie harmonogramu'"
+      :title="!selectedDoctor ? 'Edycja harmonogramu' : 'Dodanie harmonogramu'"
       centered
       no-close-on-backdrop
       no-close-on-esc
@@ -57,9 +63,21 @@
       @cancel="cancel"
     >
       <div>
-        <b-form-select class="mb-3" v-model="dayOfWeek" :options="optionsDays"></b-form-select>
-        <b-form-select :options="options" class="mb-3" v-model="hourOpen"></b-form-select>
-        <b-form-select :options="secondOption" class="mb-3" v-model="hourClose"></b-form-select>
+        <b-form-select
+          class="mb-3"
+          v-model="dayOfWeek"
+          :options="optionsDays"
+        ></b-form-select>
+        <b-form-select
+          :options="options"
+          class="mb-3"
+          v-model="hourOpen"
+        ></b-form-select>
+        <b-form-select
+          :options="secondOption"
+          class="mb-3"
+          v-model="hourClose"
+        ></b-form-select>
       </div>
     </b-modal>
   </div>
@@ -169,7 +187,7 @@ export default {
               title: "Usuwanie harmonogramu.",
               autoHideDelay: 5000
             });
-               this.getSchedule();
+            this.getSchedule();
           }
           if (data.error) {
             const error = data.error;
@@ -306,6 +324,7 @@ export default {
       this.$api
         .get(`alldoctors`)
         .then(response => {
+          console.log(response);
           this.items = response.data.items;
         })
         .catch(error => {

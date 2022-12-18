@@ -2,7 +2,13 @@
   <div id="login">
     <b-form class="form">
       <h1>Logowanie</h1>
-      <b-form-input class="input" type="email" v-model="login" required placeholder="email" />
+      <b-form-input
+        class="input"
+        type="email"
+        v-model="login"
+        required
+        placeholder="email"
+      />
       <b-form-input
         class="input"
         type="password"
@@ -10,7 +16,9 @@
         required
         placeholder="password"
       />
-      <b-button class="button" variant="primary" @click="signIn">Zaloguj</b-button>
+      <b-button class="button" variant="primary" @click="signIn"
+        >Zaloguj</b-button
+      >
     </b-form>
   </div>
 </template>
@@ -70,7 +78,6 @@ export default {
         if (error.errors.length) {
           let description = "";
           description = error.errors.map(error => error.path).join(", ");
-          errorService(error);
           this.$bvToast.toast(`Niepoprawne dane w polach ${description}.`, {
             title: "Logowanie użytkownika.",
             autoHideDelay: 5000,
